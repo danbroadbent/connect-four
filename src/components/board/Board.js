@@ -16,9 +16,15 @@ class Board extends React.Component {
         ["x", "x", "x", "x", "x", "x"],
       ],
       redTurn: false,
-      newGame: true
+      newGame: true,
+      winner: null
     }
-    this.COLUMN_LENGTH = 6;
+    this.TOTAL_ROWS = 6;
+    this.TOTAL_COLUMNS = 7;
+  }
+
+  startNewGame() {
+    this.setState({ newGame: true })
   }
 
   dropChip(column) {
@@ -27,15 +33,91 @@ class Board extends React.Component {
     const reversedColumn = grid[column].slice().reverse();
     reversedColumn.forEach((cell, i) => {
       if (cell === 'x' && droppedChip === false) {
-        grid[column][(this.COLUMN_LENGTH - 1) - i] = this.state.redTurn ? 'r' : 'b';
+        grid[column][(this.TOTAL_ROWS - 1) - i] = this.state.redTurn ? 'r' : 'b';
         droppedChip = true;
       }
     })
     if (droppedChip) {
-      this.setState({ grid: grid, redTurn: !this.state.redTurn })
+      this.setState({ grid: grid, redTurn: !this.state.redTurn }, this.checkForWinner(this.state.grid))
     } else {
-      // alert row already full
+      alert('Column already full, try a different one.')
     }
+  }
+
+  checkForWinner(grid) {
+    const winner = this.checkForHorizontalWin(grid) || this.checkForVerticalWin(grid)
+      || this.checkForDiagonalWinUp(grid) || this.checkForDiagonalWinDown(grid)
+      || this.checkTieGame(grid);
+    if (winner) {
+      this.setState({ winner: winner })
+    }
+  }
+
+  checkForVerticalWin(grid) {
+    for (let c = 0; c < this.TOTAL_COLUMNS; c++) {
+      for (let r = 3; r < this.TOTAL_ROWS; r++) {
+        if (grid[c][r] !== 'x') {
+          if (grid[c][r] === grid[c][r - 1] &&
+              grid[c][r] === grid[c][r - 2] &&
+              grid[c][r] === grid[c][r - 3]) {
+            return grid[c][r];    
+          }
+        }
+      }
+    }
+  }
+
+  checkForHorizontalWin(grid) {
+    for (let c = 0; c < 4; c++) {
+      for (let r = 0; r < this.TOTAL_ROWS; r++) {
+        if (grid[c][r] !== 'x') {
+          if (grid[c][r] === grid[c + 1][r] && 
+              grid[c][r] === grid[c + 2][r] &&
+              grid[c][r] === grid[c + 3][r]) {
+            return grid[c][r];
+          }
+        }
+      }
+    }
+  }
+
+  checkForDiagonalWinUp(grid) {
+    for (let c = 0; c < 4; c++) {
+      for (let r = 3; r < this.TOTAL_ROWS; r++) {
+        if (grid[c][r] !== 'x') {
+          if (grid[c][r] === grid[c + 1][r - 1] &&
+              grid[c][r] === grid[c + 2][r - 2] &&
+              grid[c][r] === grid[c + 3][r - 3]) {
+            return grid[c][r];
+          }
+        }
+      }
+    }
+  }
+
+  checkForDiagonalWinDown(grid) {
+    for (let c = 3; c < this.TOTAL_COLUMNS; c++) {
+      for (let r = 3; r < this.TOTAL_ROWS; r++) {
+        if (grid[c][r] !== 'x') {
+          if (grid[c][r] === grid[c - 1][r - 1] &&
+              grid[c][r] === grid[c - 2][r - 2] &&
+              grid[c][r] === grid[c - 3][r - 3]) {
+            return grid[c][r];
+          }
+        }
+      }
+    }
+  }
+
+  checkTieGame(grid) {
+    for (let c = 0; c < this.TOTAL_COLUMNS; c++) {
+      for (let r = 0; r < this.TOTAL_ROWS; r++) {
+        if (grid[c][r] === 'x') {
+          return null;
+        }
+      }
+    }
+    return 'tie'; 
   }
 
   renderColumns() {
@@ -77,9 +159,31 @@ class Board extends React.Component {
     )
   }
 
+  renderOutcome() {
+    let winningMessage;
+    if (this.state.winner === 'r') {
+      winningMessage = 'Red Player Wins!'
+    } else if (this.state.winner === 'b') {
+      winningMessage = 'Black Player Wins!'
+    } else if (this.state.winner === 'tie') {
+      winningMessage = 'Tie Game!'
+    }
+    return (
+      <div>
+        {winningMessage}
+        <div onClick={this.startNewGame}>
+          OK
+        </div>
+      </div>
+    )
+  }
+
   render() {
     if (this.state.newGame) {
       return this.renderStartScreen()
+    }
+    if (this.state.winner) {
+      return this.renderOutcome()
     }
     const playerTurn = this.state.redTurn ? 'Red' : 'Black';
     return (
