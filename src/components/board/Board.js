@@ -19,12 +19,25 @@ class Board extends React.Component {
       newGame: true,
       winner: null
     }
+    this.startNewGame = this.startNewGame.bind(this);
     this.TOTAL_ROWS = 6;
     this.TOTAL_COLUMNS = 7;
   }
 
   startNewGame() {
-    this.setState({ newGame: true })
+    this.setState({ 
+      newGame: true,
+      winner: null,
+      grid: [
+        ["x", "x", "x", "x", "x", "x"],
+        ["x", "x", "x", "x", "x", "x"],
+        ["x", "x", "x", "x", "x", "x"],
+        ["x", "x", "x", "x", "x", "x"],
+        ["x", "x", "x", "x", "x", "x"],
+        ["x", "x", "x", "x", "x", "x"],
+        ["x", "x", "x", "x", "x", "x"],
+      ]
+     })
   }
 
   dropChip(column) {
@@ -148,12 +161,11 @@ class Board extends React.Component {
   renderStartScreen() {
     const setInitialState = (color) => this.setState({ newGame: false, redTurn: color === 'red' ? true : false})
     return (
-      <div>
+      <div className='start'>
         Player 1 - Please Choose Your Color:
-        <div>
-          <div onClick={() => setInitialState('red')}>Red</div>
-          <br ></br>
-          <div onClick={() => setInitialState('black')}>Black</div>
+        <div className='button-wrapper'>
+          <span className='button' onClick={() => setInitialState('red')}>Red</span>
+          <span className='button' onClick={() => setInitialState('black')}>Black</span>
         </div>
       </div>
     )
@@ -169,9 +181,11 @@ class Board extends React.Component {
       winningMessage = 'Tie Game!'
     }
     return (
-      <div>
-        {winningMessage}
-        <div onClick={this.startNewGame}>
+      <div className='game-over-man'>
+        <div className='instructions'>
+          {winningMessage}
+        </div>
+        <div className='button' onClick={this.startNewGame}>
           OK
         </div>
       </div>
@@ -188,7 +202,7 @@ class Board extends React.Component {
     const playerTurn = this.state.redTurn ? 'Red' : 'Black';
     return (
       <div>
-        <div>{playerTurn} Player - Click a column to drop a chip</div>
+        <div className='instructions'>{playerTurn} Player - Click a column to drop a chip</div>
         <div className="board">
           {this.renderColumns()}
         </div>
