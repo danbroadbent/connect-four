@@ -1,4 +1,12 @@
 .board {
   border: 1px solid black;
   margin: 1rem;
+  display: flex;
+  margin: 1rem auto;
+  width: 350px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
 }

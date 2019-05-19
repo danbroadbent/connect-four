@@ -1,0 +1,21 @@
+.cell {
+  background-color: white;
+  border: 1px solid black;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0.5rem;
+}
+
+.x {
+  background-color: white;
+}
+
+.r {
+  background-color: red;
+}
+
+.b {
+  background-color: black;
+}
